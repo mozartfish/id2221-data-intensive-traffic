@@ -1,0 +1,21 @@
+[project]
+name = "id2221-data-intensive-traffic"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "jupyter>=1.1.1",
+    "kafka-python>=2.2.15",
+    "lab>=8.5",
+    "matplotlib>=3.10.6",
+    "numpy>=2.3.3",
+    "pyspark>=4.0.1",
+    "scikit-learn>=1.7.2",
+    "seaborn>=0.13.2",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.30.1",
+]
