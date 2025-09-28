@@ -15,18 +15,14 @@ This project ws developed as the final part of the ID2221 course at KTH to gain 
 ## Technical Stack + Setup 
 ### Data Source 
 - SL Transport API -> Real-Time 
-- GTFS Regional -> Scheduled 
 
 ### Ingestion 
-- Kafka -> Real-Time streaming 
-- HDFS(upload) -> batch GTFS data 
+- Kafka -> Real-Time streaming
 
 ### Processing 
-- Spark -> Batch processing 
 - Kafka/Spark Streams -> Real-time processing 
 
 ### Storage 
-- HDFs -> raw data storage 
 - HBase -> real-time lookup 
 - mongodb/cassandra - eda 
 
@@ -34,17 +30,6 @@ This project ws developed as the final part of the ID2221 course at KTH to gain 
 ### Real-Time Data Pipeline 
 - SL API -> Kafka -> Spark Stream -> Cassandra/MongoDB 
 
-### Batch Data Pipeline 
-- GTFS File -> HDFS -> Spark Batch -> Cassandra/MongoDB 
-
-
-## TBD 
-### Visualization
-- Apache Superset 
-- Grafana 
-- Jupyter Notebook - Altair/matplotlib 
-### Machine Learning 
-- Spark mllib 
 
 ## Installation and Setup 
 
