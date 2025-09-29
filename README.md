@@ -36,6 +36,7 @@ This project ws developed as the final part of the ID2221 course at KTH to gain 
 - inside project run **uv sync**
 
 2. run **docker-compose up -d**
+- after docker is running - run **docker ps** to ensure all the containers and services are running properly
 
 3. inside the notebook directory run the following commands 
 - **uv run jupyter lab** 
