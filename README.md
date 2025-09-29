@@ -32,4 +32,8 @@ This project ws developed as the final part of the ID2221 course at KTH to gain 
 
 
 ## Installation and Setup 
+Run the following commands within the corresponding directory 
+### Notebooks
+uv run jupyter lab kafka-demo-lab.ipynb
+
 
