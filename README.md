@@ -32,8 +32,17 @@ This project ws developed as the final part of the ID2221 course at KTH to gain 
 
 
 ## Installation and Setup 
-Run the following commands within the corresponding directory 
-### Notebooks
-uv run jupyter lab kafka-demo-lab.ipynb
+1. install [uv](https://docs.astral.sh/uv/)
+- inside project run **uv sync**
+
+2. run **docker-compose up -d**
+
+3. inside the notebook directory run the following commands 
+- **uv run jupyter lab** 
+
+4. run all cassandra_init notebook to set up the cassandra database 
+
+5. run the kafka notebook to process and store the stream data
+
 
 
