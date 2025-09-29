@@ -23,8 +23,7 @@ This project ws developed as the final part of the ID2221 course at KTH to gain 
 - Kafka/Spark Streams -> Real-time processing 
 
 ### Storage 
-- HBase -> real-time lookup 
-- mongodb/cassandra - eda 
+- cassandra -> for the big stream data 
 
 ## Data Pipeline 
 ### Real-Time Data Pipeline 
