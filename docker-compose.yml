@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
@@ -17,33 +15,48 @@ services:
       - zookeeper
     ports:
       - "9092:9092"
+      - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
 
-  cassandra:
-    image: cassandra:4.1
-    container_name: cassandra
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    container_name: kafdrop
     ports:
-      - "9042:9042"
+      - "9000:9000"
     environment:
-      - CASSANDRA_CLUSTER_NAME=TestCluster
-      - CASSANDRA_DC=dc1
-      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      KAFKA_BROKERCONNECT: "kafka:9092"
+      JVM_OPTS: "-Xms32M -Xmx64M"
+    depends_on:
+      - kafka
+
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    ports:
+      - "27017:27017"
     volumes:
-      - cassandra-data:/var/lib/cassandra
-    healthcheck:
-      test: ["CMD-SHELL", "cqlsh -e 'describe cluster'"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      - mongodb-data:/data/db
+
+  spark:
+    image: apache/spark:3.5.1
+    container_name: spark
+    depends_on:
+      - kafka
+      - mongodb
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: tail -f /dev/null
+
 
 volumes:
-  cassandra-data:
+  mongodb-data:
