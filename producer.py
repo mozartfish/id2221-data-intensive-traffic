@@ -9,7 +9,6 @@ load_dotenv()
 API_KEY = os.getenv("TRAFIKLAB_KEY")
 
 STOP_ID = "740000002"  # Göteborg Central
-# Add parameters to get more departures: limit and time window (in minutes)
 URL = f"https://realtime-api.trafiklab.se/v1/departures/{STOP_ID}?key={API_KEY}&limit=100&time_window=60"
 
 KAFKA_TOPIC = "sl_stream"

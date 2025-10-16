@@ -1,0 +1,17 @@
+# Core dependencies for id2221-data-intensive-traffic
+# Python 3.11+ required
+
+# Data processing
+pyspark>=4.0.1
+numpy>=2.3.3
+pandas>=2.0.0
+
+# Streaming & messaging
+kafka-python-ng>=2.2.2
+
+# Database drivers
+pymongo>=4.0.0
+
+# Utilities
+python-dotenv>=1.1.1
+requests>=2.31.0
