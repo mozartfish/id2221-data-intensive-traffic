@@ -176,7 +176,7 @@ docker exec spark bash -c "/opt/spark/bin/spark-submit \
   /app/spark_stream_simple.py"
 ```
 
-#### Query MongoDB data:
+#### Query MongoDB data (Python):
 ```python
 from pymongo import MongoClient
 import pandas as pd
@@ -186,6 +186,36 @@ db = client["trafiklab"]
 docs = list(db.departures.find().limit(10))
 df = pd.DataFrame(docs)
 print(df)
+```
+
+#### Query MongoDB data (MongoDB Shell):
+Access the MongoDB shell directly:
+```bash
+docker exec -it mongodb mongosh
+```
+
+Then use these commands inside the MongoDB shell:
+```javascript
+// Switch to the trafiklab database
+use trafiklab
+
+// Show all collections
+show collections
+
+// Count total documents
+db.departures.countDocuments()
+
+// View first 5 documents (prettified)
+db.departures.find().limit(5).pretty()
+
+// View specific fields only
+db.departures.find({}, {operator: 1, line: 1, destination: 1, delay_seconds: 1, _id: 0}).limit(5)
+
+// Find delayed departures
+db.departures.find({delay_seconds: {$gt: 60}}).pretty()
+
+// Exit MongoDB shell
+exit
 ```
 
 ---
