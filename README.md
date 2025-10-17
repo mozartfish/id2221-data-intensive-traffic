@@ -63,10 +63,12 @@ python web_dashboard.py
 ```
 
 ### 6. Open the dashboard
-Open http://localhost:5000 in your browser to:
+Open http://localhost:5432 in your browser to:
 - Search for transit stops
 - View real-time departures
 - Auto-start producers for monitored stops
+
+**Note:** After searching and selecting a stop, wait approximately 60 seconds for the first API call to complete and data to appear. The producer fetches data every minute.
 
 **Note:** Make sure the `.env` file with your Trafiklab API key is in the same directory as `main.py` and `web_dashboard.py`.
 
@@ -78,7 +80,7 @@ Open http://localhost:5000 in your browser to:
 | Kafka     | 29092 | localhost:29092            |
 | Kafdrop   | 9000  | http://localhost:9000      |
 | MongoDB   | 27017 | mongodb://localhost:27017  |
-| Dashboard | 5000  | http://localhost:5000      |
+| Dashboard | 5432  | http://localhost:5432      |
 
 ---
 
