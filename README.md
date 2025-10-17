@@ -44,11 +44,13 @@ cd id2221-data-intensive-traffic
 pip install -r requirements.txt
 ```
 
-### 3. Configure API key
-Create a `.env` file in the project root:
+### 3. Verify API key
+The `.env` file with the Trafiklab API key is already included in the repository. Verify it exists:
 ```bash
-TRAFIKLAB_KEY=your_api_key_here
+cat .env
 ```
+
+You should see: `TRAFIKLAB_KEY=15a3fdc86e344e94bd1e3784573b1185`
 
 ### 4. Start the pipeline
 ```bash
@@ -70,7 +72,9 @@ Open http://localhost:5432 in your browser to:
 
 **Note:** After searching and selecting a stop, wait approximately 60 seconds for the first API call to complete and data to appear. The producer fetches data every minute.
 
-**Note:** Make sure the `.env` file with your Trafiklab API key is in the same directory as `main.py` and `web_dashboard.py`.
+**Note:** The `.env` file with the Trafiklab API key is included in the repository and should be in the same directory as `main.py` and `web_dashboard.py` after cloning.
+
+---
 
 ---
 
