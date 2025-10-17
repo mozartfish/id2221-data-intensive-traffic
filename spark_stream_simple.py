@@ -18,6 +18,7 @@ schema = (
         .add("scheduled", StringType())
         .add("realtime", StringType())
         .add("delay_seconds", IntegerType())
+        .add("stop_id", StringType())
 )
 
 df = (
@@ -37,13 +38,7 @@ parsed = (
 
 def write_to_mongo(df, epoch_id):
     if not df.rdd.isEmpty():
-        (
-            df.write
-              .format("mongo")
-              .mode("append")
-              .option("uri", "mongodb://mongodb:27017/trafiklab.departures")
-              .save()
-        )
+        df.write.format("mongo").mode("append").option("uri", "mongodb://mongodb:27017/trafiklab.departures").save()
 
 query = (
     parsed.writeStream

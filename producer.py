@@ -2,13 +2,15 @@ import os
 import requests
 import json
 import time
+import sys
 from dotenv import load_dotenv
 from kafka import KafkaProducer
 
 load_dotenv()
 API_KEY = os.getenv("TRAFIKLAB_KEY")
 
-STOP_ID = "740000002"  # Göteborg Central
+STOP_ID = sys.argv[1] if len(sys.argv) > 1 else "740098000"
+
 URL = f"https://realtime-api.trafiklab.se/v1/departures/{STOP_ID}?key={API_KEY}&limit=100&time_window=60"
 
 KAFKA_TOPIC = "sl_stream"
@@ -22,17 +24,13 @@ producer = KafkaProducer(
     retries=3
 )
 
-print("Starting Trafiklab → Kafka producer...")
-
 while True:
     try:
         resp = requests.get(URL, timeout=10)
-        print("Status:", resp.status_code)
 
         if resp.ok:
             data = resp.json()
             departures = data.get("departures", [])
-            print(f"📊 Received {len(departures)} departures from API")
 
             for d in departures:
                 line = d["route"].get("designation")
@@ -49,16 +47,14 @@ while True:
                     "scheduled": sched,
                     "realtime": rt,
                     "delay_seconds": delay,
+                    "stop_id": STOP_ID
                 }
 
                 producer.send(KAFKA_TOPIC, message)
-                print("Sent to Kafka:", message)
 
             producer.flush()
-        else:
-            print("Error fetching data:", resp.text)
 
     except Exception as e:
-        print("Exception:", e)
+        pass
 
     time.sleep(60)

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trafiklab Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #333;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .line {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #333;
+            color: white;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .delay-positive {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        .delay-negative {
+            color: #388e3c;
+            font-weight: bold;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover:not(:disabled) {
+            background: #555;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .info {
+            text-align: center;
+            color: #666;
+            margin-top: 20px;
+        }
+
+        .countdown {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .search-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .search-results {
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .search-result-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .search-result-item:hover {
+            background: #f5f5f5;
+        }
+
+        .current-stop {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚆 Trafiklab Real-Time Dashboard</h1>
+
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search for a stop (e.g., Stockholm, Göteborg)..." />
+                <button onclick="clearSearch()">Clear</button>
+            </div>
+            <div id="search-results" class="search-results"></div>
+            <div class="current-stop">
+                Current stop: <strong id="current-stop-name">Stockholm Central (740098000)</strong>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total Records</h3>
+                <div class="value" id="total-records">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Unique Departures</h3>
+                <div class="value" id="unique-departures">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Average Delay</h3>
+                <div class="value" id="avg-delay">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Max Delay</h3>
+                <div class="value" id="max-delay">-</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-header">
+                <h2>Departures</h2>
+                <span>Refreshing in <span class="countdown" id="countdown">60</span>s</span>
+            </div>
+            
+            <div id="error-message"></div>
+            <div id="loading">Loading...</div>
+            
+            <table id="departures-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Operator</th>
+                        <th>Line</th>
+                        <th>Destination</th>
+                        <th>Scheduled</th>
+                        <th>Real-time</th>
+                        <th>Delay</th>
+                    </tr>
+                </thead>
+                <tbody id="departures-body">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <button id="prev-btn" onclick="previousPage()">← Previous</button>
+            <span>Page <span id="current-page">1</span> of <span id="total-pages">1</span></span>
+            <button id="next-btn" onclick="nextPage()">Next →</button>
+        </div>
+
+        <div class="info">
+            Last updated: <span id="last-update">-</span>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let totalPages = 1;
+        let totalUnique = 0;
+        let currentStopId = '740098000';  // Default: Stockholm Central
+        let currentStopName = 'Stockholm Central';
+
+        const searchInput = document.getElementById('search-input');
+        const searchResults = document.getElementById('search-results');
+        let searchTimeout;
+
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            
+            if (query.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+            
+            searchTimeout = setTimeout(() => searchStops(query), 300);
+        });
+
+        async function searchStops(query) {
+            try {
+                const response = await fetch(`/api/search-stops?q=${encodeURIComponent(query)}`);
+                const result = await response.json();
+                
+                if (result.success && result.data.length > 0) {
+                    searchResults.innerHTML = result.data.map(stop => `
+                        <div class="search-result-item" onclick="selectStop('${stop.id}', '${stop.name.replace(/'/g, "\\'")}')">
+                            <strong>${stop.name}</strong> (${stop.id})
+                            <br><small>${stop.area_type} - ${stop.transport_modes.join(', ')}</small>
+                        </div>
+                    `).join('');
+                    searchResults.style.display = 'block';
+                } else {
+                    searchResults.innerHTML = '<div class="search-result-item">No stops found</div>';
+                    searchResults.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+            }
+        }
+
+        async function selectStop(stopId, stopName) {
+            currentStopId = stopId;
+            currentStopName = stopName;
+            document.getElementById('current-stop-name').textContent = `${stopName} (${stopId})`;
+            searchInput.value = '';
+            searchResults.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/start-producer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ stop_id: stopId })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('error-message').innerHTML = 
+                        `<div style="background: #4CAF50; color: white; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                            ✅ Now monitoring ${stopName}<br>
+                            Data will appear in ~60 seconds.
+                        </div>`;
+                    setTimeout(() => {
+                        document.getElementById('error-message').innerHTML = '';
+                    }, 5000);
+                }
+            } catch (error) {
+                console.error('Failed to start producer:', error);
+            }
+            
+
+            currentPage = 1;
+            fetchDepartures();
+        }
+
+        function clearSearch() {
+            searchInput.value = '';
+            searchResults.style.display = 'none';
+        }
+
+        function formatTime(timeStr) {
+            if (!timeStr) return '-';
+            try {
+                const date = new Date(timeStr);
+                return date.toLocaleTimeString('sv-SE', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            } catch {
+                return timeStr;
+            }
+        }
+
+        function formatDelay(delay) {
+            if (delay === null || delay === undefined) {
+                return '-';
+            }
+            
+            const delayNum = Number(delay);
+            if (delayNum > 0) {
+                return `<span class="delay-positive">+${delayNum}s</span>`;
+            } else if (delayNum < 0) {
+                return `<span class="delay-negative">${delayNum}s</span>`;
+            } else {
+                return 'On time';
+            }
+        }
+
+        async function fetchDepartures() {
+            try {
+                const response = await fetch(`/api/departures?page=${currentPage}&per_page=50&stop_id=${currentStopId}`);
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || 'Failed to fetch data');
+                }
+
+                totalPages = result.pagination.total_pages;
+                totalUnique = result.pagination.total_items;
+                document.getElementById('current-page').textContent = currentPage;
+                document.getElementById('total-pages').textContent = totalPages;
+
+                document.getElementById('prev-btn').disabled = currentPage <= 1;
+                document.getElementById('next-btn').disabled = currentPage >= totalPages;
+
+                document.getElementById('total-records').textContent = result.stats.total_records;
+                document.getElementById('unique-departures').textContent = result.stats.unique_departures;
+                document.getElementById('avg-delay').textContent = result.stats.avg_delay;
+                document.getElementById('max-delay').textContent = result.stats.max_delay;
+
+                const tbody = document.getElementById('departures-body');
+                tbody.innerHTML = '';
+
+                if (result.data.length === 0) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('departures-table').style.display = 'none';
+                    document.getElementById('error-message').innerHTML = 
+                        `<div class="error">
+                            <strong>No departures yet for this stop.</strong><br>
+                            Data will appear within 60 seconds.
+                        </div>`;
+                    return;
+                }
+
+                result.data.forEach(dep => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${dep.operator || '-'}</td>
+                        <td><span class="line">${dep.line || '-'}</span></td>
+                        <td>${dep.destination || '-'}</td>
+                        <td>${formatTime(dep.scheduled)}</td>
+                        <td>${formatTime(dep.realtime)}</td>
+                        <td>${formatDelay(dep.delay_seconds)}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('departures-table').style.display = 'table';
+                document.getElementById('error-message').innerHTML = '';
+
+                document.getElementById('last-update').textContent = new Date(result.timestamp).toLocaleString();
+
+            } catch (error) {
+                console.error('Error fetching departures:', error);
+                document.getElementById('error-message').innerHTML = 
+                    `<div class="error"> Error: ${error.message}</div>`;
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                fetchDepartures();
+            }
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchDepartures();
+            }
+        }
+
+        let countdown = 60;
+        const countdownElement = document.getElementById('countdown');
+
+        function updateCountdown() {
+            countdown--;
+            countdownElement.textContent = countdown;
+            
+            if (countdown <= 0) {
+                countdown = 60;
+                fetchDepartures();
+            }
+        }
+
+        fetchDepartures();
+
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>

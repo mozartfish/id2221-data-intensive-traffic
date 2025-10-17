@@ -12,6 +12,12 @@ kafka-python-ng>=2.2.2
 # Database drivers
 pymongo>=4.0.0
 
+# Web framework
+flask>=3.0.0
+
+# Streaming & messaging
+kafka-python-ng>=2.2.2
+
 # Utilities
 python-dotenv>=1.1.1
 requests>=2.31.0
