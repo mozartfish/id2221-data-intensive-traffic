@@ -26,8 +26,9 @@ Trafiklab API → Producer → Kafka → Spark → MongoDB → Web Dashboard
 
 ## Prerequisites
 - **Python 3.11+**
-- **Docker Desktop**
-- **Trafiklab API Key** - [Get one here](https://www.trafiklab.se/)
+- **[Docker Desktop](https://www.docker.com/products/docker-desktop/)**
+- **[Trafiklab API Key](https://www.trafiklab.se/api/)** - [Get one here](https://www.trafiklab.se/)
+- **[UV](https://docs.astral.sh/uv/)**
 
 ---
 
@@ -43,6 +44,12 @@ cd id2221-data-intensive-traffic
 ```bash
 pip install -r requirements.txt
 ```
+**Or** 
+```bash
+uv sync
+uv lock 
+```
+
 
 ### 3. Verify API key
 The `.env` file with the Trafiklab API key is already included in the repository. Verify it exists:
@@ -56,12 +63,21 @@ You should see: `TRAFIKLAB_KEY=15a3fdc86e344e94bd1e3784573b1185`
 ```bash
 python main.py
 ```
+**Or**
+```bash 
+uv run main.py
+```
+
 
 This starts Docker containers, Kafka producer, and Spark streaming.
 
 ### 5. Start the web dashboard (in separate terminal)
 ```bash
 python web_dashboard.py
+```
+**Or**
+```bash 
+uv run web_dashboard.py
 ```
 
 ### 6. Open the dashboard
