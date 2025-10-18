@@ -6,7 +6,7 @@ import pandas as pd
 def ensure_spark_cache():
     try:
         subprocess.run([
-            "docker", "exec", "-it", "spark", "bash", "-c",
+            "docker", "exec", "--user", "root", "spark", "bash", "-c",
             "mkdir -p /home/spark/.ivy2/cache && chmod -R 777 /home/spark/.ivy2"
         ], check=True)
     except subprocess.CalledProcessError:
@@ -14,7 +14,7 @@ def ensure_spark_cache():
 
 def start_docker():
     subprocess.run(["docker", "compose", "up", "-d"], check=True)
-    time.sleep(10)
+    time.sleep(15)
 
 def start_producer():
     subprocess.Popen(["python", "producer.py"])

@@ -52,19 +52,25 @@ cat .env
 
 You should see: `TRAFIKLAB_KEY=15a3fdc86e344e94bd1e3784573b1185`
 
-### 4. Start the pipeline
+### 4. Start Docker Desktop
+**Important:** Make sure Docker Desktop is running before proceeding. You can verify by running:
+```bash
+docker ps
+```
+
+### 5. Start the pipeline
 ```bash
 python main.py
 ```
 
 This starts Docker containers, Kafka producer, and Spark streaming.
 
-### 5. Start the web dashboard (in separate terminal)
+### 6. Start the web dashboard (in separate terminal)
 ```bash
 python web_dashboard.py
 ```
 
-### 6. Open the dashboard
+### 7. Open the dashboard
 Open http://localhost:5432 in your browser to:
 - Search for transit stops
 - View real-time departures
